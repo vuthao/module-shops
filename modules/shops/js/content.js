@@ -8,13 +8,31 @@
 
 $(document).ready(function() {
 	$("#publ_date,#exp_date").datepicker({
-		showOn : "both",
 		dateFormat : "dd/mm/yy",
 		changeMonth : true,
 		changeYear : true,
 		showOtherMonths : true,
-		buttonImage : nv_siteroot + "images/calendar.gif",
-		buttonImageOnly : true
+		showOn : 'focus'
+	});
+	$('#publ_date-btn').click(function(){
+		$("#publ_date").datepicker('show');
+	});
+	$('#exp_date-btn').click(function(){
+		$("#exp_date").datepicker('show');
+	});
+
+	$("#gift_from, #gift_to").datepicker({
+		dateFormat : "dd/mm/yy",
+		changeMonth : true,
+		changeYear : true,
+		showOtherMonths : true,
+		showOn : 'focus'
+	});
+	$('#to-btn').click(function(){
+		$("#to").datepicker('show');
+	});
+	$('#from-btn').click(function(){
+		$("#from").datepicker('show');
 	});
 
 	$("#keywords-search").bind("keydown", function(event) {

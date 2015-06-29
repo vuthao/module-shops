@@ -65,6 +65,21 @@ $qhtml = nv_htmlspecialchars( $q );
 $ordername = $nv_Request->get_string( 'ordername', 'get', 'publtime' );
 $order = $nv_Request->get_string( 'order', 'get' ) == 'asc' ? 'asc' : 'desc';
 
+$listcatid = $nv_Request -> get_int( 'listcatid', 'get' );
+$where = '';
+if ( ! empty ( $listcatid ) )
+{
+	if ( isset ( $global_array_shops_cat[ $listcatid ] ) )
+	{
+		$subcatid = $global_array_shops_cat[ $listcatid ]['subcatid'];
+		$where = 'listcatid=' . $listcatid;
+		if ( $subcatid != 0)
+		{
+			$where .= ' or listcatid IN (' . $subcatid . ')';
+		}
+	}
+}
+
 $array_search = array(
 	'product_code' => $lang_module['search_product_code'],
 	'title' => $lang_module['search_title'],
@@ -217,6 +232,10 @@ if( $checkss == md5( session_id( ) ) )
 		$from .= ' publtime <= ' . $to . '';
 	}
 }
+if ( ! empty( $where ) )
+{
+	$from .= ' WHERE ' . $where;
+}
 
 $num_items = $db->query( 'SELECT COUNT(*) FROM ' . $from )->fetchColumn( );
 
@@ -236,8 +255,20 @@ foreach( $global_array_shops_cat as $cat )
 {
 	if( $cat['catid'] > 0 )
 	{
-		$cat['selected'] = $cat['catid'] == $catid ? ' selected="selected"' : '';
+		$xtitle_i = '';
+		if( $cat['lev'] > 0 )
+		{
+			$xtitle_i .= '&nbsp;&nbsp;&nbsp;|';
+			for( $i = 1; $i <= $cat['lev']; ++$i )
+			{
+				$xtitle_i .= '---';
+			}
+			$xtitle_i .= '>&nbsp;';
+		}
+		$xtitle_i .= $cat['title'];
+		$cat['title'] = $xtitle_i;
 
+		$cat['selected'] = $cat['catid'] == $catid ? ' selected="selected"' : '';
 		$xtpl->assign( 'CATID', $cat );
 		$xtpl->parse( 'main.catid' );
 	}
@@ -366,12 +397,12 @@ while( list( $id, $listcatid, $admin_id, $homeimgfile, $homeimgthumb, $title, $a
 	// Xac dinh anh nho
 	if( $homeimgthumb == 1 )//image thumb
 	{
-		$thumb = NV_BASE_SITEURL . NV_FILES_DIR . '/' . $module_name . '/' . $homeimgfile;
-		$imghome = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_name . '/' . $homeimgfile;
+		$thumb = NV_BASE_SITEURL . NV_FILES_DIR . '/' . $module_upload . '/' . $homeimgfile;
+		$imghome = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $homeimgfile;
 	}
 	elseif( $homeimgthumb == 2 )//image file
 	{
-		$imghome = $thumb = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_name . '/' . $homeimgfile;
+		$imghome = $thumb = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $homeimgfile;
 	}
 	elseif( $homeimgthumb == 3 )//image url
 	{
@@ -388,7 +419,7 @@ while( list( $id, $listcatid, $admin_id, $homeimgfile, $homeimgthumb, $title, $a
 
 	$xtpl->assign( 'ROW', array(
 		'id' => $id,
-		'link' => NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=' . $global_array_shops_cat[$catid_i]['alias'] . '/' . $alias . '-' . $id . $global_config['rewrite_exturl'],
+		'link' => NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=' . $global_array_shops_cat[$catid_i]['alias'] . '/' . $alias . $global_config['rewrite_exturl'],
 		'link_seller' => NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=seller&amp;pro_id=' . $id . '&amp;nv_redirect=' . nv_base64_encode( $base_url ),
 		'link_copy' => NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=content&amp;copy&amp;id=' . $id,
 		'link_warehouse' => NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&amp;' . NV_NAME_VARIABLE . '=' . $module_name . '&amp;' . NV_OP_VARIABLE . '=warehouse&amp;listid=' . $id . '&amp;checkss=' . md5( $global_config['sitekey'] . session_id() ),
@@ -418,6 +449,12 @@ while( list( $id, $listcatid, $admin_id, $homeimgfile, $homeimgthumb, $title, $a
 		$xtpl->parse( 'main.loop.seller_empty' );
 	}
 
+	// Hien thi nhap kho
+	if( $pro_config['active_warehouse'] )
+	{
+		$xtpl->parse( 'main.loop.warehouse_icon' );
+	}
+
 	$xtpl->parse( 'main.loop' );
 
 	++$a;
@@ -427,9 +464,13 @@ $array_list_action = array(
 	'delete' => $lang_global['delete'],
 	'publtime' => $lang_module['publtime'],
 	'exptime' => $lang_module['exptime'],
-	'addtoblock' => $lang_module['addtoblock'],
-	'warehouse' => $lang_module['warehouse']
+	'addtoblock' => $lang_module['addtoblock']
 );
+
+if( $pro_config['active_warehouse'] )
+{
+	$array_list_action['warehouse'] = $lang_module['warehouse'];
+}
 
 while( list( $catid_i, $title_i ) = each( $array_list_action ) )
 {

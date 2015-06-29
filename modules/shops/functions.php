@@ -67,11 +67,10 @@ if( $op == 'main' )
 	}
 	else
 	{
-		if( sizeof( $array_op ) == 2 and preg_match( '/^([a-z0-9\-]+)\-([0-9]+)$/i', $array_op[1], $m1 ) and ! preg_match( '/^page\-([0-9]+)$/', $array_op[1], $m2 ) )
+		if( sizeof( $array_op ) == 2 and preg_match( '/^([a-z0-9\-]+)$/i', $array_op[1] ) and ! preg_match( '/^page\-([0-9]+)$/', $array_op[1], $m2 ) )
 		{
 			$op = 'detail';
-			$alias_url = $m1[1];
-			$id = $m1[2];
+			$alias_url = $array_op[1];
 		}
 		else
 		{
@@ -112,19 +111,19 @@ if( defined( 'NV_IS_USER' ) and $pro_config['active_wishlist'] )
  */
 function GetDataIn( $result, $catid )
 {
-	global $global_array_shops_cat, $module_name, $module_file, $db, $link, $module_info, $global_config;
+	global $global_array_shops_cat, $module_name, $module_file, $module_upload, $db, $link, $module_info, $global_config;
 
 	$data_content = array();
 	$data = array();
-	while( list( $id, $listcatid, $publtime, $title, $alias, $hometext, $homeimgalt, $homeimgfile, $homeimgthumb, $product_code, $product_number, $product_price, $money_unit, $discount_id, $showprice,$promotional, $newday ) = $result->fetch( 3 ) )
+	while( list( $id, $listcatid, $publtime, $title, $alias, $hometext, $homeimgalt, $homeimgfile, $homeimgthumb, $product_code, $product_number, $product_price, $money_unit, $discount_id, $showprice,$gift_content, $gift_from, $gift_to, $newday ) = $result->fetch( 3 ) )
 	{
 		if( $homeimgthumb == 1 )//image thumb
 		{
-			$thumb = NV_BASE_SITEURL . NV_FILES_DIR . '/' . $module_name . '/' . $homeimgfile;
+			$thumb = NV_BASE_SITEURL . NV_FILES_DIR . '/' . $module_upload . '/' . $homeimgfile;
 		}
 		elseif( $homeimgthumb == 2 )//image file
 		{
-			$thumb = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_name . '/' . $homeimgfile;
+			$thumb = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $homeimgfile;
 		}
 		elseif( $homeimgthumb == 3 )//image url
 		{
@@ -151,8 +150,10 @@ function GetDataIn( $result, $catid )
 			'money_unit' => $money_unit,
 			'showprice' => $showprice,
 			'newday' => $newday,
-			'promotional'=> $promotional,
-			'link_pro' => $link . $global_array_shops_cat[$listcatid]['alias'] . '/' . $alias . '-' . $id . $global_config['rewrite_exturl'],
+			'gift_content'=> $gift_content,
+			'gift_from'=> $gift_from,
+			'gift_to'=> $gift_to,
+			'link_pro' => $link . $global_array_shops_cat[$listcatid]['alias'] . '/' . $alias . $global_config['rewrite_exturl'],
 			'link_order' => $link . 'setcart&amp;id=' . $id
 		);
 	}
@@ -167,28 +168,28 @@ function GetDataIn( $result, $catid )
 }
 
 /**
- * GetDataInGroups()
+ * GetDataInGroup()
  *
  * @param mixed $result
- * @param mixed $array_g
+ * @param mixed $groupid
  * @return
  */
 function GetDataInGroups( $result, $array_g )
 {
-	global $global_array_group, $module_name, $module_file, $db, $link, $module_info, $global_array_shops_cat, $global_config;
+	global $global_array_group, $module_name, $module_file, $module_upload, $db, $link, $module_info, $global_array_shops_cat, $global_config;
 
 	$data_content = array();
 	$data = array();
 
-	while( list( $id, $listcatid, $publtime, $title, $alias, $hometext, $homeimgalt, $homeimgfile, $homeimgthumb, $product_code, $product_number, $product_price, $money_unit, $discount_id, $showprice, $promotional ) = $result->fetch( 3 ) )
+	while( list( $id, $listcatid, $publtime, $title, $alias, $hometext, $homeimgalt, $homeimgfile, $homeimgthumb, $product_code, $product_number, $product_price, $money_unit, $discount_id, $showprice,$gift_content, $newday ) = $result->fetch( 3 ) )
 	{
 		if( $homeimgthumb == 1 )//image thumb
 		{
-			$thumb = NV_BASE_SITEURL . NV_FILES_DIR . '/' . $module_name . '/' . $homeimgfile;
+			$thumb = NV_BASE_SITEURL . NV_FILES_DIR . '/' . $module_upload . '/' . $homeimgfile;
 		}
 		elseif( $homeimgthumb == 2 )//image file
 		{
-			$thumb = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_name . '/' . $homeimgfile;
+			$thumb = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $homeimgfile;
 		}
 		elseif( $homeimgthumb == 3 )//image url
 		{
@@ -214,9 +215,9 @@ function GetDataInGroups( $result, $array_g )
 			'discount_id' => $discount_id,
 			'money_unit' => $money_unit,
 			'showprice' => $showprice,
-			'newday' => $global_array_shops_cat[$listcatid]['newday'],
-			'promotional' => $promotional,
-			'link_pro' => $link . $global_array_shops_cat[$listcatid]['alias'] . '/' . $alias . '-' . $id . $global_config['rewrite_exturl'],
+			'newday' => $newday,
+			'gift_content' => $gift_content,
+			'link_pro' => $link . $global_array_shops_cat[$listcatid]['alias'] . '/' . $alias . $global_config['rewrite_exturl'],
 			'link_order' => $link . 'setcart&amp;id=' . $id
 		);
 	}
@@ -238,20 +239,20 @@ function GetDataInGroups( $result, $array_g )
  */
 function GetDataInGroup( $result, $groupid )
 {
-	global $global_array_group, $module_name, $module_file, $db, $link, $module_info, $global_array_shops_cat, $global_config;
+	global $global_array_group, $module_name, $module_file, $module_upload, $db, $link, $module_info, $global_array_shops_cat, $global_config;
 
 	$data_content = array();
 	$data = array();
 
-	while( list( $id, $listcatid, $publtime, $title, $alias, $hometext, $homeimgalt, $homeimgfile, $homeimgthumb, $product_code, $product_number, $product_price, $money_unit, $discount_id, $showprice, $promotional ) = $result->fetch( 3 ) )
+	while( list( $id, $listcatid, $publtime, $title, $alias, $hometext, $homeimgalt, $homeimgfile, $homeimgthumb, $product_code, $product_number, $product_price, $money_unit, $discount_id, $showprice, $gift_content, $gift_to, $gift_from ) = $result->fetch( 3 ) )
 	{
 		if( $homeimgthumb == 1 )//image thumb
 		{
-			$thumb = NV_BASE_SITEURL . NV_FILES_DIR . '/' . $module_name . '/' . $homeimgfile;
+			$thumb = NV_BASE_SITEURL . NV_FILES_DIR . '/' . $module_upload . '/' . $homeimgfile;
 		}
 		elseif( $homeimgthumb == 2 )//image file
 		{
-			$thumb = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_name . '/' . $homeimgfile;
+			$thumb = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $homeimgfile;
 		}
 		elseif( $homeimgthumb == 3 )//image url
 		{
@@ -277,9 +278,11 @@ function GetDataInGroup( $result, $groupid )
 			'discount_id' => $discount_id,
 			'money_unit' => $money_unit,
 			'showprice' => $showprice,
-			'promotional' => $promotional,
+			'gift_content' => $gift_content,
+			'gift_from' => $gift_from,
+			'gift_to' => $gift_to,
 			'newday' => $global_array_shops_cat[$listcatid]['newday'],
-			'link_pro' => $link . $global_array_shops_cat[$listcatid]['alias'] . '/' . $alias . '-' . $id . $global_config['rewrite_exturl'],
+			'link_pro' => $link . $global_array_shops_cat[$listcatid]['alias'] . '/' . $alias . $global_config['rewrite_exturl'],
 			'link_order' => $link . 'setcart&amp;id=' . $id
 		);
 	}
@@ -319,4 +322,89 @@ function SetSessionProView( $id, $title, $alias, $addtime, $link, $homeimgthumb 
 			'homeimgthumb' => $homeimgthumb
 		);
 	}
+}
+
+/**
+ * nv_custom_tpl()
+ *
+ * @param mixed $name_file
+ * @param mixed $array_custom
+ * @param mixed $array_custom_lang
+ * @param mixed $idtemplate
+ * @return
+ */
+function nv_custom_tpl( $name_file, $array_custom, $array_custom_lang, $idtemplate )
+{
+	global $module_data, $module_info, $module_file, $lang_module, $db_config, $db, $global_config;
+
+	$sql = 'SELECT * FROM ' . $db_config['prefix'] . '_' . $module_data . '_field';
+	$result = $db->query( $sql );
+	while( $row = $result->fetch( ) )
+	{
+		$row['tab'] = unserialize( $row['tab'] );
+		foreach( $row['tab'] as $key => $value )
+		{
+			if( $key == $idtemplate )
+			{
+				$arr[$row['field']] = 1;
+			}
+		}
+	}
+	$html ='';
+	
+	if( file_exists( NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file . '/' . $name_file ) )
+	{
+		$theme_tpl = $global_config['module_theme'];
+	}
+	else
+	{
+		$theme_tpl = 'default';
+	}
+	
+	$xtpl = new XTemplate( $name_file, NV_ROOTDIR . '/themes/' . $theme_tpl . '/modules/' . $module_file );
+	$xtpl->assign( 'CUSTOM_LANG', $array_custom_lang );
+	$xtpl->assign( 'CUSTOM_DATA', $array_custom );
+	$count = 0;
+	foreach ($array_custom as $key => $value)
+	{
+		if( isset($arr[$key]) and !empty($value) ) 
+		{
+			$xtpl->parse( 'main.'.$key );
+			$count ++;
+		}
+	}
+	
+	if( $count > 0)
+	{
+		$xtpl->parse( 'main' );
+		$html = $xtpl->text( 'main' );
+	}
+	return $html;
+}
+
+/**
+ * nv_tpl()
+ *
+ * @param mixed $name_file
+ * @param mixed $array_data
+ * @return
+ */
+function nv_tpl( $name_file, $array_data )
+{
+	global $module_data, $module_info, $module_file, $lang_module, $db_config, $db;
+
+	$html ='';
+	$xtpl = new XTemplate( $name_file, NV_ROOTDIR . '/themes/' . $module_info['template'] . '/modules/' . $module_file );
+	$xtpl->assign( 'LANG', $lang_module );
+	$xtpl->assign( 'NV_BASE_ADMINURL', NV_BASE_ADMINURL );
+
+	foreach ($array_data as $value) {
+		$xtpl->assign( 'DATA', $value );
+		$xtpl->parse( 'main.loop' );
+	}
+
+	$xtpl->parse( 'main' );
+	$html = $xtpl->text( 'main' );
+	return $html;
+
 }

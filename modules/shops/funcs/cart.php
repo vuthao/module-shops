@@ -172,11 +172,11 @@ if( ! empty( $_SESSION[$module_data . '_cart'] ) )
 		{
 			if( $homeimgthumb == 1 )//image thumb
 			{
-				$thumb = NV_BASE_SITEURL . NV_FILES_DIR . '/' . $module_name . '/' . $homeimgfile;
+				$thumb = NV_BASE_SITEURL . NV_FILES_DIR . '/' . $module_upload . '/' . $homeimgfile;
 			}
 			elseif( $homeimgthumb == 2 )//image file
 			{
-				$thumb = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_name . '/' . $homeimgfile;
+				$thumb = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $homeimgfile;
 			}
 			elseif( $homeimgthumb == 3 )//image url
 			{
@@ -200,7 +200,7 @@ if( ! empty( $_SESSION[$module_data . '_cart'] ) )
 				$group = explode( ',', $group );
 				asort( $group );
 				$group = implode( ',', $group );
-				$product_number = 0;
+				$product_number = 1;
 				$_result = $db->query( 'SELECT quantity FROM ' . $db_config['prefix'] . '_' . $module_data . '_group_quantity WHERE pro_id = ' . $id . ' AND listgroup="' . $group . '"' );
 				if( $_result )
 				{
@@ -233,7 +233,7 @@ if( ! empty( $_SESSION[$module_data . '_cart'] ) )
 				'product_unit' => $unit,
 				'money_unit' => $money_unit,
 				'group' => $group,
-				'link_pro' => $link . $global_array_shops_cat[$listcatid]['alias'] . '/' . $alias . '-' . $id . $global_config['rewrite_exturl'],
+				'link_pro' => $link . $global_array_shops_cat[$listcatid]['alias'] . '/' . $alias . $global_config['rewrite_exturl'],
 				'num' => $number,
 				'link_remove' => $link . 'remove&id=' . $id
 			);

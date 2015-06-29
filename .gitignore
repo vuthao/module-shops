@@ -1,4 +1,7 @@
 # Ignore some static files and directories.
+/.gitignore
+/.settings/
+/.buildpath
 /.project
 /.htaccess
 /CJzip.php
@@ -16,7 +19,6 @@
 /cache/
 /data/
 /editors/
-/files/
 /images/
 /includes/
 /install/
@@ -25,7 +27,6 @@
 /logs/
 /sess/
 /tmp/
-/uploads/
 /README.md
 
 # Ignore fix module files and directories.
@@ -46,4 +47,3 @@
 !/service_shops_nganluong.php
 !/includes/class/nusoap.php
 !/includes/class/PayPal/*
-/.gitignore

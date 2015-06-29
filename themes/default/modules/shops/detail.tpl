@@ -28,11 +28,23 @@
 		<div class="panel-body">
 			<div class="row">
 				<div class="col-xs-24 col-sm-6 text-center">
-					<a href="{SRC_PRO_LAGE}" title="{TITLE}" <!-- BEGIN: shadowbox -->rel="shadowbox"<!-- END: shadowbox -->> <img src="{SRC_PRO}" alt="" width="140px" class="img-thumbnail"> </a>
+					<img src="{SRC_PRO}" alt="" width="140px" class="img-thumbnail pointer" id="imageproduct" data-target="#imagemodal">
+               		<div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+									<h4 class="modal-title" id="myModalLabel">{TITLE}</h4>
+								</div>
+								<div class="modal-body">
+									<img src="{SRC_PRO_LAGE}" id="imagepreview" class="img-thumbnail" >
+								</div>
+							</div>
+						</div>
+					</div>
 					<br />
-					<em class="fa fa-search-plus text-primary zoom_img">&nbsp;</em><a href="{SRC_PRO_LAGE}" title="{TITLE}" rel="shadowbox[miss]">{LANG.detail_view_lage_img}</a>
 					<!-- BEGIN: adminlink -->
-					<p>
+					<p class="tab-pane">
 						{ADMINLINK}
 					</p>
 					<!-- END: adminlink -->
@@ -112,10 +124,10 @@
 							<!-- END: maintitle -->
 
 							<!-- BEGIN: subtitle -->
-							<ul class="pull-left" style="padding: 0 10px 0">
+							<ul class="pull-left list-inline" style="padding: 0 10px 0">
 								<!-- BEGIN: loop -->
 								<li>
-									<a href="{SUBTITLE.link}" title="{SUBTITLE.title}">{SUBTITLE.title}</a>
+									{SUBTITLE.title}
 								</li>
 								<!-- END: loop -->
 							</ul>
@@ -126,13 +138,7 @@
 						<!-- END: group_detail -->
 
 						<!-- BEGIN: custom_data -->
-						<!-- BEGIN: loop -->
-						<li>
-							<p>
-								<strong>{CUSTOM_LANG}:</strong> {CUSTOM_DATA}
-							</p>
-						</li>
-						<!-- END: loop -->
+						{CUSTOM_DATA}
 						<!-- END: custom_data -->
 
 						<!-- BEGIN: hometext -->
@@ -156,6 +162,17 @@
 						<!-- END: warranty -->
 					</ul>
 					<hr />
+					<!-- BEGIN: gift -->
+					<div class="alert alert-info">
+						<div class="pull-left">
+							<em class="fa fa-gift fa-3x">&nbsp;</em>
+						</div>
+						<div class="pull-left">
+							<h4>{gift_content}</h4>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+					<!-- END: gift -->
 					<!-- BEGIN: group -->
 					<div class="well">
 						<div class="filter_product">
@@ -166,7 +183,7 @@
 									{HEADER}
 								</div>
 								<!-- END: header -->
-								<div class="col-xs-16 col-sm-19 itemsgroup" data-groupid="{GROUPID}" data-header="{HEADER}">
+								<div class="col-xs-16 col-sm-19" data-groupid="{GROUPID}" data-header="{HEADER}">
 									<!-- BEGIN: loop -->
 									<label class="label_group <!-- BEGIN: active -->active<!-- END: active -->"><input type="radio" class="groupid" name="groupid[{GROUPID}]" value="{GROUP.groupid}" <!-- BEGIN: checked -->checked="checked" <!-- END: checked -->>{GROUP.title}</label>
 									<!-- END: loop -->
@@ -214,11 +231,11 @@
 					<!-- END: typepeice -->
 
 					<!-- BEGIN: order -->
-					<button class="btn btn-danger btn-order" data-id="{proid}" onclick="cartorder_detail(this, '{POPUP}', 0)">
+					<button class="btn btn-danger btn-order" data-id="{proid}" onclick="cartorder_detail(this, '{POPUP}', 0); return false;">
 						<em class="fa fa-shopping-cart fa-lg">&nbsp;</em>
 						{LANG.add_cart}
 					</button>
-					<button class="btn btn-success btn-order" data-id="{proid}" onclick="cartorder_detail(this, '{POPUP}', 1)">
+					<button class="btn btn-success btn-order" data-id="{proid}" onclick="cartorder_detail(this, '{POPUP}', 1); return false;">
 						<em class="fa fa-paper-plane-o fa-lg">&nbsp;</em>
 						{LANG.buy_now}
 					</button>
@@ -231,173 +248,73 @@
 		</div>
 	</div>
 
-	<div style="detail_com">
-		<!-- BEGIN: shop -->
-		{LANG.company_product} : <a href="{link_shop}" title="{title_shop}">{title_shop}</a>
-		<!-- END: shop -->
-	</div>
-
-	<div id="tabs" class="tabs">
-		<nav>
-			<ul>
-				<!-- BEGIN: product_detail -->
-				<li>
-					<a href="#section-1"><em class="fa fa-bars">&nbsp;</em><span>{LANG.product_detail}</span></a>
+	<!-- BEGIN: product_detail -->
+		<!-- BEGIN: tabs -->
+		<div role="tabpanel" class="tabs">
+			<ul class="nav nav-tabs" role="tablist">
+				<!-- BEGIN: tabs_title -->
+				<li role="presentation" <!-- BEGIN: active -->class="active"<!-- END: active -->>
+					<a href="#{TABS_KEY}-{TABS_ID}" aria-controls="{TABS_KEY}-{TABS_ID}" role="tab" data-toggle="tab">
+						<!-- BEGIN: icon -->
+						<img src="{TABS_ICON}" />
+						<!-- END: icon -->
+						<!-- BEGIN: icon_default -->
+						<em class="fa fa-bars">&nbsp;</em>
+						<!-- END: icon_default -->
+						<span>{TABS_TITLE}</span>
+					</a>
 				</li>
-				<!-- END: product_detail -->
-
-				<!-- BEGIN: othersimg_title -->
-				<li>
-					<a href="#section-2"><em class="fa fa-picture-o">&nbsp;</em><span>{LANG.add_otherimage}</span></a>
-				</li>
-				<!-- END: othersimg_title -->
-
-				<!-- BEGIN: comment_tab -->
-				<li>
-					<a href="#section-3"><em class="fa fa-comments-o">&nbsp;</em><span>{LANG.detail_comments}</span></a>
-				</li>
-				<!-- END: comment_tab -->
-
-				<!-- BEGIN: allowed_rating_tab -->
-				<li>
-					<a href="#section-4"><em class="fa fa-star-o">&nbsp;</em><span>{LANG.rate_feedback} ({RATE_TOTAL})</span></a>
-				</li>
-				<!-- END: allowed_rating_tab -->
+				<!-- END: tabs_title -->
 			</ul>
-		</nav>
-		<div class="content">
-			<section id="section-1">
-				{DETAIL}
-			</section>
-			<!-- BEGIN: othersimg -->
-			<section id="section-2">
-				<!-- BEGIN: loop -->
-				<div class="col-xs-12 col-md-6">
-					<a href="{IMG_SRC_OTHER}" class="thumbnail" rel="shadowbox[miss]"><img src="{IMG_SRC_OTHER}" style="max-height: 100px" /></a>
+
+			<div class="tab-content">
+				<!-- BEGIN: tabs_content -->
+				<div role="tabpanel" class="tab-pane fade <!-- BEGIN: active -->active in<!-- END: active -->" id="{TABS_KEY}-{TABS_ID}">
+					{TABS_CONTENT}
 				</div>
-				<!-- END: loop -->
-				<div class="clear">
-					&nbsp;
+				<!-- END: tabs_content -->
+			</div>
+		</div>
+		<!-- END: tabs -->
+
+		<!-- BEGIN: keywords -->
+	    <div class="panel panel-default">
+		    <div class="panel-body">
+				<div class="keywords">
+					<em class="fa fa-tags">&nbsp;</em><strong>{LANG.keywords}: </strong>
+					<!-- BEGIN: loop -->
+						<a title="{KEYWORD}" href="{LINK_KEYWORDS}"><em>{KEYWORD}</em></a>{SLASH}
+					<!-- END: loop -->
 				</div>
-			</section>
-			<!-- END: othersimg -->
+			</div>
+		</div>
+		<!-- END: keywords -->
 
-			<!-- BEGIN: comment -->
-			<section id="section-3">
-				{CONTENT_COMMENT}
-			</section>
-			<!-- END: comment -->
+		<!-- BEGIN: other -->
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				{LANG.detail_others}
+			</div>
+			<div class="panel-body">
+				{OTHER}
+			</div>
+		</div>
+		<!-- END: other -->
 
-			<!-- BEGIN: allowed_rating -->
-			<section id="section-4">
-				<div class="panel panel-default">
-					<div class="panel-body">
-						<div class="row form-review">
-							<div class="col-xs-24 col-sm-11 border border-right">
-								<form id="review_form">
-									<div class="form-group">
-										<input type="text" class="form-control" name="sender" value="{SENDER}" placeholder="{LANG.profile_user_name}">
-									</div>
-									<div class="form-group">
-										<div class="rate-ex2-cnt">
-											<div id="1" class="rate-btn-1 rate-btn"></div>
-											<div id="2" class="rate-btn-2 rate-btn"></div>
-											<div id="3" class="rate-btn-3 rate-btn"></div>
-											<div id="4" class="rate-btn-4 rate-btn"></div>
-											<div id="5" class="rate-btn-5 rate-btn"></div>
-										</div>
-									</div>
-									<div class="form-group">
-										<textarea name="comment" class="form-control" placeholder="{LANG.rate_comment}"></textarea>
-									</div>
-									<!-- BEGIN: captcha -->
-									<div class="form-group">
-										<input type="text" maxlength="6" value="" id="fcode_iavim" name="fcode" class="form-control pull-left" style="width: 40%" placeholder="{LANG.rate_captcha}" />
-										<div class="pull-left" style="margin-top: 5px">
-											&nbsp;&nbsp;<img height="22" src="{NV_BASE_SITEURL}index.php?scaptcha=captcha" alt="{LANG.captcha}" id="vimg" />
-											&nbsp;<em class="fa fa-pointer fa-refresh fa-lg" onclick="nv_change_captcha('vimg','fcode_iavim');">&nbsp;</em>
-										</div>
-										<div class="clear"></div>
-									</div>
-									<!-- END: captcha -->
-									<div class="form-group">
-										<input type="submit" class="btn btn-primary" value="{LANG.rate}" />
-									</div>
-								</form>
-							</div>
-							<div class="col-xs-24 col-sm-13 border">
-								<div id="rate_list">
-									<p class="text-center">
-										<em class="fa fa-spinner fa-spin fa-3x">&nbsp;</em>
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-			<!-- END: allowed_rating -->
+		<!-- BEGIN: other_view -->
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				{LANG.detail_others_view}
+			</div>
+			<div class="panel-body">
+				{OTHER_VIEW}
+			</div>
 		</div>
-	</div>
-
-	<!-- BEGIN: other -->
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			{LANG.detail_others}
-		</div>
-		<div class="panel-body">
-			{OTHER}
-		</div>
-	</div>
-	<!-- END: other -->
-
-	<!-- BEGIN: other_view -->
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			{LANG.detail_others_view}
-		</div>
-		<div class="panel-body">
-			{OTHER_VIEW}
-		</div>
-	</div>
-	<!-- END: other_view -->
+		<!-- END: other_view -->
+	<!-- END: product_detail -->
 </div>
-<div class="msgshow" id="msgshow"></div>
-<script type="text/javascript" src="{NV_BASE_SITEURL}modules/{MODULE_FILE}/js/tabresponsive.js"></script>
-<!-- BEGIN: allowed_rating_js -->
-<script type="text/javascript">
-	$("#rate_list").load('{LINK_REVIEW}&showdata=1');
-	var rating = 0;
-	$('.rate-btn').hover(function() {
-		$('.rate-btn').removeClass('rate-btn-hover');
-		rating = $(this).attr('id');
-		for (var i = rating; i >= 0; i--) {
-			$('.rate-btn-' + i).addClass('rate-btn-hover');
-		};
-	});
 
-	$('#review_form').submit(function() {
-		var sender = $(this).find('input[name="sender"]').val();
-		var comment = $(this).find('textarea[name="comment"]').val();
-		var fcode = $(this).find('input[name="fcode"]').val();
-		$.ajax({
-			type : "POST",
-			url : '{LINK_REVIEW}' + '&nocache=' + new Date().getTime(),
-			data : 'sender=' + sender + '&rating=' + rating + '&comment=' + comment + '&fcode=' + fcode,
-			success : function(data) {
-				var s = data.split('_');
-				if (s[0] == 'OK') {
-					$('#review_form input[name="sender"], #review_form input[name="fcode"], #review_form textarea').val('');
-					$('.rate-btn').removeClass('rate-btn-hover');
-					$("#rate_list").load('{LINK_REVIEW}&showdata=1');
-				}
-				alert(s[1]);
-			}
-		});
-		return false;
-	});
-</script>
-<!-- END: allowed_rating_js -->
+<div class="msgshow" id="msgshow"></div>
 
 <!-- BEGIN: allowed_print_js -->
 <script type="text/javascript">
@@ -412,9 +329,16 @@
 </script>
 <!-- END: allowed_print_js -->
 
+<!-- BEGIN: imagemodal -->
+<script type="text/javascript">
+    $("#imageproduct").on("click", function() {
+    	$('#imagemodal').modal('show');
+    });
+</script>
+<!-- END: imagemodal -->
+
 <script type="text/javascript">
 	var detail_error_group = '{LANG.detail_error_group}';
-	new CBPFWTabs(document.getElementById('tabs'));
 
 	$('.groupid').click(function() {
 		var _this = $('input[name="'+$(this).attr('name')+'"]');

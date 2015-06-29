@@ -343,10 +343,10 @@ function ChangeActive(idobject, url_active) {
 	});
 }
 
-function get_alias() {
+function get_alias(mod, id) {
 	var title = strip_tags(document.getElementById('idtitle').value);
 	if (title != '') {
-		$.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=alias&nocache=' + new Date().getTime(), 'title=' + encodeURIComponent(title), function(res) {
+		$.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=alias&nocache=' + new Date().getTime(), 'title=' + encodeURIComponent(title) + '&mod=' + mod + '&id=' + id, function(res) {
 			if (res != "") {
 				document.getElementById('idalias').value = res;
 			} else {
@@ -358,8 +358,20 @@ function get_alias() {
 }
 
 function nv_add_otherimage() {
-	var newitem = "<tr><td><input class=\"form-control\" value=\"\" name=\"otherimage[]\" id=\"otherimage_" + file_items + "\" style=\"width : 80%\" maxlength=\"255\" />";
-	newitem += "&nbsp;<input type=\"button\" class=\"btn btn-info\" value=\"" + file_selectfile + "\" name=\"selectfile\" onclick=\"nv_open_browse( '" + nv_base_adminurl + "index.php?" + nv_name_variable + "=upload&popup=1&area=otherimage_" + file_items + "&path=" + file_dir + "&type=file&currentpath=" + currentpath + "', 'NVImg', 850, 400, 'resizable=no,scrollbars=no,toolbar=no,location=no,status=no' ); return false; \" /></td></tr>";
+//	var newitem = "<div class=\"form-group\"><input class=\"form-control\" value=\"\" name=\"otherimage[]\" id=\"otherimage_" + file_items + "\" style=\"width : 80%\" maxlength=\"255\" />";
+	//newitem += "&nbsp;<input type=\"button\" class=\"btn btn-info\" value=\"" + file_selectfile + "\" name=\"selectfile\" onclick=\"nv_open_browse( '" + nv_base_adminurl + "index.php?" + nv_name_variable + "=upload&popup=1&area=otherimage_" + file_items + "&path=" + file_dir + "&type=file&currentpath=" + currentpath + "', 'NVImg', 850, 400, 'resizable=no,scrollbars=no,toolbar=no,location=no,status=no' ); return false; \" /></div>";
+
+	var newitem = '';
+	newitem += "<div class=\"form-group\">";
+	newitem += "<div class=\"input-group\">";
+	newitem += "	<input class=\"form-control\" type=\"text\" name=\"otherimage[]\" id=\"otherimage_" + file_items + "\" />";
+	newitem += "	<span class=\"input-group-btn\">";
+	newitem += "		<button class=\"btn btn-default\" type=\"button\" onclick=\"nv_open_browse( '" + nv_base_adminurl + "index.php?" + nv_name_variable + "=upload&popup=1&area=otherimage_" + file_items + "&path=" + file_dir + "&type=file&currentpath=" + currentpath + "', 'NVImg', 850, 400, 'resizable=no,scrollbars=no,toolbar=no,location=no,status=no' ); return false; \" >";
+	newitem += "			<em class=\"fa fa-folder-open-o fa-fix\">&nbsp;</em></button>";
+	newitem += "	</span>";
+	newitem += "</div>";
+	newitem += "</div>";
+
 	$("#otherimage").append(newitem);
 	file_items++;
 }
@@ -397,7 +409,15 @@ function nv_change_catid(obj, id) {
 		$("#typepriceold").val(typeprice);
 	}
 	$('#custom_form').load(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=custom_form&cid=' + cid + "&id=" + id);
-	$('#listgroupid').load(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=getgroup&cid=' + cid);
+	$.get( script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=getgroup&cid=' + cid, function( data ) {
+		if( data != '' ){
+			$('#list_group').show();
+			$("#listgroupid").html( data );
+		}
+		else{
+			$('#list_group').hide();
+		}
+	});
 }
 
 function nv_price_config_add_item() {
@@ -478,6 +498,34 @@ function nv_del_review(id) {
 	}
 }
 
+function nv_del_files(id) {
+	if (confirm(nv_is_del_confirm[0])) {
+		$.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=download&nocache=' + new Date().getTime(), 'del=1&id=' + id, function(res) {
+			if (res == 'OK') {
+				$('#row_' + id).slideUp();
+			} else {
+				alert(nv_is_del_confirm[2]);
+			}
+
+		});
+	}
+}
+
+function nv_change_active_files( id )
+{
+	var new_status = $('#change_active_' + id).is(':checked') ? 1 : 0;
+	if (confirm(nv_is_change_act_confirm[0])) {
+		var nv_timer = nv_settimeout_disable('change_active_' + id, 3000);
+		$.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=download&nocache=' + new Date().getTime(), 'change_active=1&id=' + id + '&new_status=' + new_status, function(res) {
+
+		});
+	}
+	else
+	{
+		$('#change_active_' + id).prop('checked', new_status ? false : true );
+	}
+}
+
 function FormatNumber(str) {
 
 	var strTemp = GetNumber(str);
@@ -545,7 +593,14 @@ function IsNumberInt(str) {
 	return str;
 }
 
-function reset_form( form ){
-	form.find('input:text, input:password, input:file, select, textarea').val('');
-	form.find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
-}
+$.fn.clearForm = function() {
+	return this.each(function() {
+		var type = this.type, tag = this.tagName.toLowerCase();
+		if (tag == 'form')
+			return $(':input', this).clearForm();
+		if (type == 'text' || type == 'password' || tag == 'textarea')
+			this.value = '';
+		else if (tag == 'select')
+			this.selectedIndex = 0;
+	});
+};

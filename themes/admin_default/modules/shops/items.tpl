@@ -1,10 +1,8 @@
 <!-- BEGIN: main -->
+<link rel="stylesheet" href="{NV_BASE_SITEURL}js/select2/select2.min.css">
 <link type="text/css" href="{NV_BASE_SITEURL}js/ui/jquery.ui.core.css" rel="stylesheet" />
 <link type="text/css" href="{NV_BASE_SITEURL}js/ui/jquery.ui.theme.css" rel="stylesheet" />
 <link type="text/css" href="{NV_BASE_SITEURL}js/ui/jquery.ui.datepicker.css" rel="stylesheet" />
-<script type="text/javascript" src="{NV_BASE_SITEURL}js/ui/jquery.ui.core.min.js"></script>
-<script type="text/javascript" src="{NV_BASE_SITEURL}js/ui/jquery.ui.datepicker.min.js"></script>
-<script type="text/javascript" src="{NV_BASE_SITEURL}js/language/jquery.ui.datepicker-{NV_LANG_INTERFACE}.js"></script>
 
 <div class="well">
 	<form action="{NV_BASE_ADMINURL}index.php" method="get">
@@ -28,7 +26,7 @@
 			</div>
 			<div class="col-xs-12 col-md-4">
 				<div class="form-group">
-					<select class="form-control" name="catid">
+					<select class="form-control" name="catid" id="catid">
 						<option value="0">---{LANG.search_cat}---</option>
 						<!-- BEGIN: catid -->
 						<option value="{CATID.catid}"{CATID.selected}>{CATID.title}</option>
@@ -115,7 +113,12 @@
 					<td class="text-center">{ROW.product_number}</td>
 					<td class="text-center"><!-- BEGIN: seller --><a href="{ROW.link_seller}" title="{LANG.report_detail}">{ROW.num_sell} {ROW.product_unit}</a><!-- END: seller --><!-- BEGIN: seller_empty --> {ROW.num_sell} {ROW.product_unit} <!-- END: seller_empty --></td>
 					<td class="text-center">{ROW.status}</td>
-					<td class="text-center"><a href="{ROW.link_warehouse}" title="{LANG.warehouse}"><em class="fa fa-cubes fa-lg">&nbsp;</em></a>&nbsp;&nbsp;&nbsp;<a href="{ROW.link_copy}" title="{LANG.product_copy_note}"><em class="fa fa-copy fa-lg">&nbsp;</em></a>&nbsp;&nbsp;&nbsp;{ROW.link_edit}&nbsp;&nbsp;&nbsp;{ROW.link_delete} </td>
+					<td class="text-center">
+						<!-- BEGIN: warehouse_icon -->
+						<a href="{ROW.link_warehouse}" title="{LANG.warehouse}"><em class="fa fa-cubes fa-lg">
+						<!-- END: warehouse_icon -->
+						&nbsp;</em></a>&nbsp;&nbsp;&nbsp;<a href="{ROW.link_copy}" title="{LANG.product_copy_note}"><em class="fa fa-copy fa-lg">&nbsp;</em></a>&nbsp;&nbsp;&nbsp;{ROW.link_edit}&nbsp;&nbsp;&nbsp;{ROW.link_delete}
+					</td>
 				</tr>
 				<!-- END: loop -->
 			</tbody>
@@ -142,9 +145,14 @@
 		</table>
 	</div>
 </form>
-
+<script type="text/javascript" src="{NV_BASE_SITEURL}js/select2/select2.min.js"></script>
+<script type="text/javascript" src="{NV_BASE_SITEURL}js/ui/jquery.ui.core.min.js"></script>
+<script type="text/javascript" src="{NV_BASE_SITEURL}js/ui/jquery.ui.datepicker.min.js"></script>
+<script type="text/javascript" src="{NV_BASE_SITEURL}js/language/jquery.ui.datepicker-{NV_LANG_INTERFACE}.js"></script>
 <script type='text/javascript'>
 	$(function() {
+		$("#catid").select2();
+
 		$("#from, #to").datepicker({
 			dateFormat : "dd/mm/yy",
 			changeMonth : true,
